@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<style>
+    /* Sidebar styles */
+    .sidebar {
+        height: 100%;
+        width: 0;
+        position: fixed;
+        z-index: 1000;
+        top: 63px;
+        left: 0;
+        background-color: #1B3C53;
+        overflow-x: hidden;
+        transition: 0.5s;
+        padding-top: 30px;
+    }
+
+    .sidebar a {
+        padding: 10px 15px;
+        text-decoration: none;
+        font-size: 18px;
+        color: white;
+        display: block;
+        transition: 0.3s;
+    }
+
+    .sidebar a:hover {
+        color: #777676;
+    }
+
+    .sidebar .closebtn {
+        position: absolute;
+        top: 10px;
+        right: 25px;
+        font-size: 36px;
+        margin-left: 50px;
+    }
+
+    #menuIcon {
+        font-size: 30px;
+        cursor: pointer;
+        color: white;
+    }
+
+    .navbar {
+        padding: 10px 20px;
+    }
+</style>
+
+<nav class="navbar navbar-dark bg-dark">
+    <span id="menuIcon" onclick="openNav()">&#9776;</span>
+    <a class="navbar-brand" href="/">Hotel Dashboard</a>
+</nav>
+
+<div id="mySidebar" class="sidebar">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <a href="/rooms">Rooms</a>
+    <a href="/room-types">Room Types</a>
+    <a href="/room-details">Room Details</a>
+</div>
+
+<script>
+    function openNav() {
+        document.getElementById("mySidebar").style.width = "250px";
+    }
+
+    function closeNav() {
+        document.getElementById("mySidebar").style.width = "0";
+    }
+</script>
+
+<div class="container mt-4">
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>

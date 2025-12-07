@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card p-3 shadow-sm">
+            <h4>Total Rooms</h4>
+            <p class="text-primary fs-3">{{ total_rooms }}</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow-sm">
+            <h4>Available Rooms</h4>
+            <p class="text-success fs-3">{{ available_rooms }}</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow-sm">
+            <h4>Total Bookings</h4>
+            <p class="text-danger fs-3">{{ total_bookings }}</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

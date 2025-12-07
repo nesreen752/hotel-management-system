@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<div class="container mt-4">
+
+    <!-- Search Bar -->
+    <div class="d-flex justify-content-between mb-3">
+        <h3 class="m-0">Rooms</h3>
+        
+
+
+
+        <input type="text" id="tableSearch" onkeyup="searchTable()" 
+            class="form-control w-25" 
+            placeholder="Search...">
+    </div>
+
+    <!-- Table -->
+    <table id="dataTable" class="table table-bordered table-hover text-center align-middle">
+        <thead class="table-primary">
+            <tr>
+                <th>Room #</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Floor</th>
+                <!-- <th>Actions</th> -->
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for r in rooms %}
+            <tr>
+                <td>{{ r.RoomNumber }}</td>
+                <td>{{ r.TypeName }}</td>
+                <td>
+                    {% if r.Status == 'Available' %}
+                        <span class="badge bg-success">{{ r.Status }}</span>
+                    {% elif r.Status == 'Occupied' %}
+                        <span class="badge bg-danger">{{ r.Status }}</span>
+                    {% elif r.Status == 'Cleaning' %}
+                        <span class="badge bg-warning text-dark">{{ r.Status }}</span>
+                    {% else %}
+                        <span class="badge bg-secondary">{{ r.Status }}</span>
+                    {% endif %}
+                </td>
+
+                <td>{{ r.FloorLevel }}</td>
+
+                <!-- <td>
+                    <a href="/room/edit/{{ r.RoomNumber }}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="/room/delete/{{ r.RoomNumber }}" class="btn btn-danger btn-sm">Delete</a>
+                </td> -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item disabled"><a class="page-link">Previous</a></li>
+            <li class="page-item active"><a class="page-link">1</a></li>
+            <li class="page-item"><a class="page-link">2</a></li>
+            <li class="page-item"><a class="page-link">3</a></li>
+            <li class="page-item"><a class="page-link">Next</a></li>
+        </ul>
+    </nav>
+    <a href="/room/add" class="btn btn-primary mb-3">Add Room</a>
+</div>
+
+<!-- Javascript Search -->
+<script>
+function searchTable() {
+    let input = document.getElementById("tableSearch");
+    let filter = input.value.toLowerCase();
+    let rows = document.querySelectorAll("#dataTable tbody tr");
+
+    rows.forEach(row => {
+        let text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+    });
+}
+</script>
+
+
+{% endblock %}

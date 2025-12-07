@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Room Types</h2>
+
+
+<table class="table table-bordered table-hover text-center align-middle">
+    <thead class="table-primary">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Beds</th>
+            <th>AC</th>
+            <th>TV</th>
+            <th>WiFi</th>
+            <th>Airport Shuttle</th>
+            <th>Concierge</th>
+            <th>Pool</th>
+            <th>Spa</th>
+            <th>Meeting Corner</th>
+            <th>Price</th>
+            <!-- <th>Actions</th> -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for t in types %}
+        <tr>
+            <td>{{ t.RoomTypeID }}</td>
+            <td>{{ t.TypeName }}</td>
+            <td>{{ t.BedCount }}</td>
+            <td>{{ t.HasAC }}</td>
+            <td>{{ t.HasTV }}</td>
+            <td>{{ t.HasWiFi }}</td>
+            <td>{{ t.HasAirportShuttle }}</td>
+            <td>{{ t.HasConcierge }}</td>
+            <td>{{ t.HasPool }}</td>
+            <td>{{ t.HasSpa }}</td>
+            <td>{{ t.HasMeetingCorner }}</td>
+            <td>{{ t.PricePerNight }}</td>
+            <!-- <td>
+                <a href="/room-type/edit/{{ t.RoomTypeID }}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="/room-type/delete/{{ t.RoomTypeID }}" class="btn btn-danger btn-sm">Delete</a>
+            </td> -->
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="/room-type/add" class="btn btn-primary mb-3">Add Room Type</a>
+{% endblock %}
