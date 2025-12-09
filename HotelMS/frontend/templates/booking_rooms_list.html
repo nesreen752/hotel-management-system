@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Rooms List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; padding: 2rem 0; font-family: system-ui, sans-serif; }
+        .card { border: none; border-radius: 12px; overflow: hidden; }
+        .table thead { background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white; }
+        .badge-room { font-size: 0.9rem; }
+        .payment-paid { color: #16a34a; font-weight: 600; }
+        .payment-unpaid { color: #dc2626; font-weight: 600; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 fw-bold text-primary">
+            <i class="bi bi-building-check"></i> Booked Rooms List
+        </h1>
+        <span class="badge bg-primary fs-5">
+            {{ bookings_rooms|length }} Assigned Room{{ 's' if bookings_rooms|length != 1 else '' }}
+        </span>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if bookings_rooms %}
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Guest Name</th>
+                        <th>Room</th>
+                        <th>Room Status</th>
+                        <th>Check-In</th>
+                        <th>Check-Out</th>
+                        <th>Payment</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Paid On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for br in bookings_rooms %}
+                    <tr class="{% if not br.PaymentID %}table-warning opacity-75{% endif %}">
+                        <td><strong class="text-primary">#{{ br.BookingID }}</strong></td>
+                        <td>
+                            <i class="bi bi-person-fill text-muted me-2"></i>
+                            {{ br.GuestName }}
+                        </td>
+                        <td>
+                            <span class="badge bg-info text-dark badge-room">{{ br.RoomNumber }}</span>
+                        </td>
+                        <td>
+                            {% if br.RoomStatus == 'Available' %}
+                                <span class="badge bg-success">Available</span>
+                            {% elif br.RoomStatus == 'Occupied' %}
+                                <span class="badge bg-danger">Occupied</span>
+                            {% elif br.RoomStatus == 'Cleaning' %}
+                                <span class="badge bg-warning text-dark">Cleaning</span>
+                            {% elif br.RoomStatus == 'Maintenance' %}
+                                <span class="badge bg-secondary">Maintenance</span>
+                            {% else %}
+                                <span class="badge bg-light text-dark">{{ br.RoomStatus }}</span>
+                            {% endif %}
+                        </td>
+                        <td><i class="bi bi-calendar-check text-success me-1"></i> {{ br.CheckInDate }}</td>
+                        <td><i class="bi bi-calendar-x text-danger me-1"></i> {{ br.CheckOutDate }}</td>
+                        <td>
+                            {% if br.PaymentID %}
+                                <span class="payment-paid"><i class="bi bi-check-circle-fill"></i> Paid</span>
+                            {% else %}
+                                <span class="payment-unpaid"><i class="bi bi-x-circle-fill"></i> Not Paid</span>
+                            {% endif %}
+                        </td>
+                        <td class="fw-bold text-end">
+                            {% if br.PaymentAmount %}
+                                ${{ "%.2f"|format(br.PaymentAmount) }}
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if br.PaymentMethod %}
+                                {% if br.PaymentMethod == 'Credit Card' %}
+                                    <i class="bi bi-credit-card text-primary"></i> Credit Card
+                                {% elif br.PaymentMethod == 'Debit Card' %}
+                                    <i class="bi bi-credit-card-2-back text-info"></i> Debit Card
+                                {% elif br.PaymentMethod == 'Cash' %}
+                                    <i class="bi bi-cash text-success"></i> Cash
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if br.PaymentDate %}
+                                <small class="text-success fw-bold">{{ br.PaymentDate }}</small>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-inbox display-1 text-muted opacity-50"></i>
+        <h4 class="mt-4 text-muted">No room bookings yet</h4>
+        <p class="text-muted">Guests and their assigned rooms will appear here once booked.</p>
+    </div>
+    {% endif %}
+
+    <div class="mt-4 text-center text-muted small">
+        Generated on {{ current_time }}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

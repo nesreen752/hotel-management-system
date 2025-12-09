@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect
 from db import get_db
+from datetime import datetime
 
 app = Flask(__name__, template_folder="../frontend/templates")
 
@@ -122,5 +123,65 @@ def add_room():
     return render_template("add_room.html", types=types)
 
 
+
+@app.route("/booking_rooms")
+def booking_rooms_list():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            br.BookingID, 
+            br.RoomNumber,
+            CONCAT(g.FirstName, ' ', g.LastName) AS GuestName,
+            b.CheckInDate, 
+            b.CheckOutDate, 
+            r.Status AS RoomStatus,
+
+            p.PaymentID,
+            p.Amount AS PaymentAmount,
+            p.Method AS PaymentMethod,
+            p.Date AS PaymentDate
+
+        FROM Booking_Rooms br
+        JOIN Booking b ON br.BookingID = b.BookingID
+        JOIN Guest g ON b.GuestID = g.GuestID
+        JOIN Room r ON br.RoomNumber = r.RoomNumber
+        JOIN Payment p ON b.BookingID = p.BookingID
+
+        ORDER BY br.BookingID, br.RoomNumber;
+    """)
+
+    raw_bookings = cursor.fetchall()
+
+    # Format dates safely in Python
+    bookings_rooms = []
+    for row in raw_bookings:
+        formatted = row.copy()  # Don't mutate original
+
+        # Format dates if they exist and are datetime objects
+        if row['CheckInDate']:
+            formatted['CheckInDate'] = row['CheckInDate'].strftime('%b %d, %Y')
+        else:
+            formatted['CheckInDate'] = '—'
+
+        if row['CheckOutDate']:
+            formatted['CheckOutDate'] = row['CheckOutDate'].strftime('%b %d, %Y')
+        else:
+            formatted['CheckOutDate'] = '—'
+
+        if row['PaymentDate']:
+            formatted['PaymentDate'] = row['PaymentDate'].strftime('%b %d, %Y')
+        else:
+            formatted['PaymentDate'] = None  # Will show as "-"
+
+        bookings_rooms.append(formatted)
+
+    # Format current time in Python
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+
+    return render_template("booking_rooms_list.html", 
+                           bookings_rooms=bookings_rooms,
+                           current_time=current_time)
 if __name__ == "__main__":
     app.run(debug=True)
