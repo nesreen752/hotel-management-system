@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hotel Booking Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <header>
+      {% include 'home_navbar.html' %}
+    </header>
+
+    <!-- Main Booking Form -->
+    <main class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-md-9 col-lg-7">
+          <div class="card shadow-sm p-4">
+            <h2 class="text-center mb-4">Book a Room</h2>
+            <form id="booking-form" action="{{ url_for('process_booking') }}" method="POST">
+              <!-- Guest Info -->
+              <div class="mb-3">
+                <label for="fname" class="form-label">First Name</label>
+                <input id="fname" class="form-control" name="fname" type="text" required />
+              </div>
+              <div class="mb-3">
+                <label for="lname" class="form-label">Last Name</label>
+                <input id="lname" class="form-control" name="lname" type="text" required />
+              </div>
+              <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input id="phone" class="form-control" name="phone" type="number" required />
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input id="email" class="form-control" type="email" name="email" required />
+              </div>
+              <div class="mb-3">
+                <label for="city" class="form-label">City</label>
+                <input id="city" class="form-control" name="city" type="text" required />
+              </div>
+              <div class="mb-3">
+                <label for="state" class="form-label">State</label>
+                <input id="state" class="form-control" name="state" type="text" required />
+              </div>
+              <div class="mb-3">
+                <label for="country" class="form-label">Country</label>
+                <input id="country" class="form-control" name="country" type="text" required />
+              </div>
+
+              <!-- Dates -->
+              <div class="mb-3">
+                <label for="checkin" class="form-label">Check-in Date</label>
+                <input id="checkin" class="form-control" type="date" name="checkin" required />
+              </div>
+              <div class="mb-3">
+                <label for="checkout" class="form-label">Check-out Date</label>
+                <input id="checkout" class="form-control" type="date" name="checkout" required />
+              </div>
+
+              <!-- Room Type -->
+              <select id="room_type" name="room_type" class="form-select" onchange="showRoomDetails(this.value)">
+    <option value="" disabled selected>Select a room type</option>
+    <option value="Classic">Classic</option>
+    <option value="Deluxe">Deluxe</option>
+    <option value="Business">Business</option>
+    <option value="Suite">Suite</option>
+    <option value="VIP">VIP</option>
+</select>
+
+
+              <!-- Room Details Table -->
+              <div id="room-details-container" class="mt-4 mb-4"></div>
+
+              <!-- Payment Method -->
+              <div class="mb-4">
+    <label class="form-label d-block">Payment Method</label>
+    
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="payment_method" id="payCredit" value="Credit Card" required />
+        <label class="form-check-label" for="payCredit">
+            <i class="fa-solid fa-credit-card"></i> Credit/Debit Card
+        </label>
+    </div>
+
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="payment_method" id="payCash" value="Cash" required />
+        <label class="form-check-label" for="payCash">
+            <i class="fa-solid fa-money-bill"></i> Cash
+        </label>
+    </div>
+
+    <!-- لو حابة تضيف Debit Card منفصل ممكن تضيفها -->
+</div>
+
+              <!-- Submit -->
+              <div class="d-grid">
+                <button class="btn btn-primary" type="submit">Book Now</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      {% include 'footer.html' %}
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='scripts/bootstrap.bundle.min.js') }}"></script>
+
+    <script>
+      // --- Random Room Details Logic ---
+      function getRandomAmenity() {
+        return Math.random() < 0.5 ? "Yes" : "No";
+      }
+
+      function generateRandomDetails(roomType) {
+        const randomId = `R-${Math.floor(Math.random() * 900) + 100}`;
+        let price = 0;
+        if (roomType === "Single") price = Math.floor(Math.random() * (200 - 100 + 1) + 100);
+        else if (roomType === "Double") price = Math.floor(Math.random() * (350 - 200 + 1) + 200);
+        else if (roomType === "Suite") price = Math.floor(Math.random() * (700 - 350 + 1) + 350);
+
+        return {
+          id: randomId,
+          beds: Math.floor(Math.random() * 3) + 1,
+          price: price,
+          ac: getRandomAmenity(),
+          tv: getRandomAmenity(),
+          wifi: "Yes",
+          shuttle: getRandomAmenity(),
+          concierge: getRandomAmenity(),
+          pool: getRandomAmenity(),
+          spa: getRandomAmenity(),
+          meeting: getRandomAmenity(),
+        };
+      }
+
+      function showRoomDetails(roomType) {
+        const container = document.getElementById("room-details-container");
+        const priceDisplay = document.getElementById("price-per-night");
+        if (!roomType) { container.innerHTML = ""; priceDisplay.textContent = "Select a room type to see details."; return; }
+
+        const details = generateRandomDetails(roomType);
+        priceDisplay.textContent = `Price: $${details.price} / night`;
+
+        const tableHTML = `
+          <div class="table-responsive border rounded shadow-sm">
+            <table class="table table-bordered table-hover text-center align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>ID</th><th>Name</th><th>Beds</th><th>AC</th><th>TV</th><th>WiFi</th><th>Shuttle</th><th>Concierge</th><th>Pool</th><th>Spa</th><th>Meeting</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>${details.id}</td>
+                  <td>${roomType}</td>
+                  <td>${details.beds}</td>
+                  <td>${details.ac}</td>
+                  <td>${details.tv}</td>
+                  <td>${details.wifi}</td>
+                  <td>${details.shuttle}</td>
+                  <td>${details.concierge}</td>
+                  <td>${details.pool}</td>
+                  <td>${details.spa}</td>
+                  <td>${details.meeting}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        `;
+        container.innerHTML = tableHTML;
+      }
+    </script>
+  </body>
+</html>
