@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends 'base.html' %}
 {% block content %}
 
 <h2>Room Types</h2>
@@ -45,5 +45,11 @@
         {% endfor %}
     </tbody>
 </table>
-<a href="/room-type/add" class="btn btn-primary mb-3">Add Room Type</a>
+<div class="d-flex justify-content-end gap-2">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary mb-3">
+        <i class="fa-solid fa-xmark me-1"></i> Cancel
+    </a>
+    <a href="/room-type/add" class="btn btn-primary mb-3">Add Room Type</a>
+</div>
+                
 {% endblock %}

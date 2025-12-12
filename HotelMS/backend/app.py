@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from db import get_db
 from datetime import datetime
+from datetime import datetime
 import random
 
 app = Flask(__name__, template_folder="../frontend/templates", static_folder='../frontend/static')
@@ -43,7 +44,6 @@ def rooms_list():
     """)
     rooms = cursor.fetchall()
     return render_template("rooms_list.html", rooms=rooms)
-
 
 @app.route("/room/<int:number>")
 def room_details(number):
@@ -249,18 +249,18 @@ def login():
         # Login success
         session['staff_id'] = staff['StaffID']
         session['name'] = staff['FirstName']
-        session['role'] = staff['Role']
+        session['role'] = staff['Role'].lower()
 
         flash(f'Welcome back, {staff["FirstName"]}!', 'success')
         # Redirect by role
         # Get role from staff
         user_role = staff['Role'].lower()
         if user_role == "manager":
-            return redirect('/manager')
+            return redirect('/dashboard')
         elif user_role == "receptionist":
-            return redirect('/reception')
+            return redirect('/dashboard')
         elif user_role == "roomservice":
-            return redirect('/roomservice')
+            return redirect('/dashboard')
         else:
             flash("Role not recognized!", "danger")
             return redirect('/login')
@@ -270,17 +270,17 @@ def login():
 # ----------------------------------------------------------------
 # ROLE PAGES
 # ----------------------------------------------------------------
-@app.route("/manager")
-def manager_page():
-    return render_template("Home.html")
+# @app.route("/manager")
+# def manager_page():
+#     return render_template("main_dashboard.html")
 
-@app.route("/reception")
-def reception_page():
-    return render_template("booking_rooms_list.html")
+# @app.route("/reception")
+# def reception_page():
+#     return render_template("main_dashboard.html")
 
-@app.route("/roomservice")
-def roomservice_page():
-    return render_template("dashboard.html")
+# @app.route("/roomservice")
+# def roomservice_page():
+#     return render_template("main_dashboard.html")
 
 # ----------------------------------------------------------------
 # LOGOUT
@@ -290,6 +290,188 @@ def logout():
     session.clear()
     flash("You have been logged out.", "success")
     return redirect('/login')
+
+
+# ================================
+# DASHBOARD — dynamic by role
+# ================================
+@app.route("/dashboard")
+def dashboard():
+    # If user not logged in → redirect
+    if "role" not in session:
+        return redirect("/login")
+
+    role = session["role"].lower()
+    name = session["name"]
+
+    # choose navbar
+    if role == "manager":
+        navbar = "navbar_manager.html"
+    elif role == "receptionist":
+        navbar = "navbar_reception.html"
+    else:
+        navbar = "navbar_roomservice.html"
+
+    # Render unified dashboard with correct navbar
+    return render_template(
+        "main_dashboard.html",
+        name=name,
+        role=role,
+        navbar=navbar
+    )
+
+@app.route("/staff/add", methods=['GET', 'POST'])
+def add_staff():
+    if request.method == 'POST':
+    
+        fname = request.form.get('firstname', '').strip()
+        lname = request.form.get('lastname', '').strip()
+        role = request.form.get('role', '').strip()
+        phone = request.form.get('phone', '').strip()
+        email = request.form.get('email', '').strip().lower()
+        salary = request.form.get('salary', '').strip()
+
+    
+        if not all([fname, lname, role, phone, email, salary]):
+            flash('All fields are required!', 'danger')
+            return render_template("add_staff.html")
+
+        staff_id = generate_staff_id()   
+
+        try:
+            db = get_db()
+            cursor = db.cursor()
+            cursor.execute("""
+                INSERT INTO Staff (StaffID, FirstName, LastName, Role, Phone, Email, Salary)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (staff_id, fname, lname, role, phone, email, salary))
+            db.commit()
+            flash(f'Staff member added successfully! Staff ID: {staff_id}', 'success')
+            return redirect(url_for('rooms_list'))
+
+        except Exception as e:
+            print(e)
+            flash('Error adding staff member. Email might already exist.', 'danger')
+            return render_template("add_staff.html")
+
+    
+    return render_template("add_staff.html")
+
+@app.route("/staff")
+def staff_list():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    
+    cursor.execute("SELECT * FROM Staff ORDER BY FirstName, LastName")
+    staff_members = cursor.fetchall()
+    
+    return render_template("staff_list.html", staff_members=staff_members)
+
+from datetime import datetime
+
+@app.route("/transactions")
+def transactions():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    
+    cursor.execute("""
+        SELECT 
+            b.BookingID,
+            br.RoomNumber,
+            CONCAT(g.FirstName, ' ', g.LastName) AS GuestName,
+            rt.TypeName AS RoomType,
+            DATEDIFF(b.CheckOutDate, b.CheckInDate) AS Nights,
+            b.CheckInDate,
+            b.CheckOutDate,
+            p.Amount AS PaymentAmount,
+            p.Method AS PaymentMethod,
+            p.Date AS PaymentDate
+        FROM Booking b
+        JOIN Booking_Rooms br ON b.BookingID = br.BookingID
+        JOIN Guest g ON b.GuestID = g.GuestID
+        JOIN Room r ON br.RoomNumber = r.RoomNumber
+        JOIN RoomType rt ON r.RoomTypeID = rt.RoomTypeID
+        LEFT JOIN Payment p ON b.BookingID = p.BookingID
+        ORDER BY b.BookingID DESC
+    """)
+    
+    transactions_data = cursor.fetchall()
+
+    # Format dates and add PaymentStatus dynamically
+    for t in transactions_data:
+        t['CheckInDate'] = t['CheckInDate'].strftime('%Y-%m-%d') if t['CheckInDate'] else '-'
+        t['CheckOutDate'] = t['CheckOutDate'].strftime('%Y-%m-%d') if t['CheckOutDate'] else '-'
+        t['PaymentDate'] = t['PaymentDate'].strftime('%Y-%m-%d') if t.get('PaymentDate') else '-'
+        # Determine status: if PaymentAmount exists → Completed, else Processing
+        t['PaymentStatus'] = 'Completed' if t.get('PaymentAmount') else 'Processing'
+    
+    return render_template("transactions.html", transactions=transactions_data)
+
+@app.route("/my_tasks")
+def my_tasks():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+
+    staff_id = session.get('staff_id')
+
+    # جلب المهام الخاصة بالموظف الحالي
+    cursor.execute("""
+        SELECT ra.AssignmentID, ra.RoomNumber, ra.DateAssigned, ra.DateCompleted
+        FROM RoomAssignment ra
+        JOIN RoomAssignment_Staff ras ON ra.AssignmentID = ras.AssignmentID
+        WHERE ras.StaffID = %s
+    """, (staff_id,))
+    raw_tasks = cursor.fetchall()
+
+    tasks = []
+    for row in raw_tasks:
+        task = row.copy()
+        # تحويل string to datetime إذا مش None
+        if task['DateAssigned'] and isinstance(task['DateAssigned'], str):
+            task['DateAssigned'] = datetime.strptime(task['DateAssigned'], "%Y-%m-%d %H:%M:%S")
+        if task['DateCompleted'] and isinstance(task['DateCompleted'], str):
+            task['DateCompleted'] = datetime.strptime(task['DateCompleted'], "%Y-%m-%d %H:%M:%S")
+        tasks.append(task)
+    
+    return render_template("my_tasks.html", tasks=tasks)
+
+
+@app.route("/room-assign/add", methods=["GET", "POST"])
+def add_room_assignment():
+    if "staff_id" not in session:
+        return redirect("/login")
+
+    staff_id = session["staff_id"]
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+
+
+    cursor.execute("SELECT RoomNumber FROM Room WHERE Status = 'Available'")
+    rooms = cursor.fetchall()
+
+    if request.method == "POST":
+        room_number = request.form.get("room_number")
+        date_assigned = request.form.get("date_assigned")
+
+        # Insert into RoomAssignment
+        cursor.execute("""
+            INSERT INTO RoomAssignment (RoomNumber, DateAssigned)
+            VALUES (%s, %s)
+        """, (room_number, date_assigned))
+        assignment_id = cursor.lastrowid
+
+        # Link the assignment to the logged-in staff
+        cursor.execute("""
+            INSERT INTO RoomAssignment_Staff (AssignmentID, StaffID)
+            VALUES (%s, %s)
+        """, (assignment_id, staff_id))
+
+        db.commit()
+        return redirect("/booking_rooms")
+
+    return render_template("add_room_assignment.html", rooms=rooms)
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

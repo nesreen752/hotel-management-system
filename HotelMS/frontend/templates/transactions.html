@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Transaction History{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="card p-4 shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="m-0"><i class="fa-solid fa-book-open-reader me-2"></i> Transaction History</h2>
+        </div>
+
+        <div class="d-flex justify-content-end align-items-center mb-4 gap-3">
+            <input 
+                type="text" 
+                id="transactionSearch" 
+                onkeyup="filterTransactions()" 
+                class="form-control" 
+                placeholder="Search ID, Guest Name, or Nights..."
+                style="max-width: 300px;" 
+            />
+
+            <select id="roomTypeFilter" onchange="filterTransactions()" class="form-select" style="max-width: 180px;">
+                <option value="">All Room Types</option>
+                {% for t in transactions | map(attribute='RoomType') | unique %}
+                    <option value="{{ t }}">{{ t }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- <select id="statusFilter" onchange="filterTransactions()" class="form-select" style="max-width: 180px;">
+                <option value="">All Statuses</option>
+                <option value="Completed">Completed</option>
+                <option value="Processing">Processing</option>
+                <option value="Cancelled">Cancelled</option>
+            </select> -->
+        </div>
+
+        <div class="table-responsive">
+            <table id="dataTable" class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Room Number</th>
+                        <th>Guest Name</th>
+                        <th>Room Type</th>
+                        <th>Nights</th>
+                        <th>Check-in Date</th>
+                        <th>Amount</th>
+                        <!-- <th>Status</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in transactions %}
+                    <tr data-status="{{ t.PaymentStatus }}" data-room-type="{{ t.RoomType }}">
+                        <td>{{ t.BookingID }}</td>
+                        <td>{{ t.RoomNumber }}</td>
+                        <td>{{ t.GuestName }}</td>
+                        <td>{{ t.RoomType }}</td>
+                        <td>{{ t.Nights }}</td>
+                        <td>{{ t.CheckInDate }}</td>
+                        <td>${{ '%.2f' | format(t.PaymentAmount if t.PaymentAmount else 0) }}</td>
+                        <!-- <td>
+                            {% if t.PaymentStatus.lower() == 'completed' %}
+                                <span class="badge badge-completed">Completed</span>
+                            {% elif t.PaymentStatus.lower() == 'processing' %}
+                                <span class="badge badge-processing text-dark">Processing</span>
+                            {% elif t.PaymentStatus.lower() == 'cancelled' %}
+                                <span class="badge badge-cancelled">Cancelled</span>
+                            {% else %}
+                                <span class="badge badge-secondary">{{ t.PaymentStatus }}</span>
+                            {% endif %}
+                        </td> -->
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center">No transactions found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</br>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary mb-3">
+        <i class="fa-solid fa-xmark me-1"></i> Cancel
+    </a>
+</div>
+
+<script>
+function filterTransactions() {
+    let searchInput = document.getElementById("transactionSearch").value.toLowerCase();
+    let statusFilter = document.getElementById("statusFilter").value.toLowerCase();
+    let roomTypeFilter = document.getElementById("roomTypeFilter").value.toLowerCase();
+    let rows = document.querySelectorAll("#dataTable tbody tr");
+
+    rows.forEach(row => {
+        let textContent = row.textContent.toLowerCase();
+        let rowStatus = row.getAttribute('data-status').toLowerCase();
+        let rowRoomType = row.getAttribute('data-room-type').toLowerCase();
+
+        let searchMatch = textContent.includes(searchInput);
+        let statusMatch = statusFilter.length === 0 || rowStatus === statusFilter;
+        let roomTypeMatch = roomTypeFilter.length === 0 || rowRoomType === roomTypeFilter;
+
+        row.style.display = (searchMatch && statusMatch && roomTypeMatch) ? "" : "none";
+    });
+}
+</script>
+
+{% endblock %}

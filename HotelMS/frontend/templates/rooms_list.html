@@ -1,22 +1,25 @@
-{% extends "layout.html" %}
+
+
+<!-- {% extends "staff_navbar.html" %} -->
+
 {% block content %}
-
-
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
 <div class="container mt-4">
 
     <!-- Search Bar -->
     <div class="d-flex justify-content-between mb-3">
-        <h3 class="m-0">Rooms</h3>
-        
-
-
-
-        <input type="text" id="tableSearch" onkeyup="searchTable()" 
-            class="form-control w-25" 
-            placeholder="Search...">
+        <h3 class="m-0"><i class="fa-solid fa-bed me-2"></i> Room List</h3>
+            
+        <input type="text" id="tableSearch" onkeyup="searchTable()"
+               class="form-control w-25"
+               placeholder="Search...">
     </div>
 
-    <!-- Table -->
+    <!-- Rooms Table -->
     <table id="dataTable" class="table table-bordered table-hover text-center align-middle">
         <thead class="table-primary">
             <tr>
@@ -27,7 +30,6 @@
                 <!-- <th>Actions</th> -->
             </tr>
         </thead>
-
         <tbody>
             {% for r in rooms %}
             <tr>
@@ -40,48 +42,40 @@
                         <span class="badge bg-danger">{{ r.Status }}</span>
                     {% elif r.Status == 'Cleaning' %}
                         <span class="badge bg-warning text-dark">{{ r.Status }}</span>
-                    {% else %}
+                    {% elif r.Status == 'Maintenance' %}
                         <span class="badge bg-secondary">{{ r.Status }}</span>
+                    {% else %}
+                        <span class="badge bg-dark">{{ r.Status }}</span>
                     {% endif %}
                 </td>
-
                 <td>{{ r.FloorLevel }}</td>
-
-                <!-- <td>
-                    <a href="/room/edit/{{ r.RoomNumber }}" class="btn btn-warning btn-sm">Edit</a>
-                    <a href="/room/delete/{{ r.RoomNumber }}" class="btn btn-danger btn-sm">Delete</a>
-                </td> -->
+                
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <!-- Pagination -->
-    <nav>
-        <ul class="pagination justify-content-center">
-            <li class="page-item disabled"><a class="page-link">Previous</a></li>
-            <li class="page-item active"><a class="page-link">1</a></li>
-            <li class="page-item"><a class="page-link">2</a></li>
-            <li class="page-item"><a class="page-link">3</a></li>
-            <li class="page-item"><a class="page-link">Next</a></li>
-        </ul>
-    </nav>
-    <a href="/room/add" class="btn btn-primary mb-3">Add Room</a>
+    
+    {% if session.role.lower() == 'manager' %}
+    <a href="{{ url_for('add_room') }}" class="btn btn-primary btn-sm">
+        <i class="fa-solid fa-bed me-1"></i> Add Room
+    </a>
+    
+    <a href="{{ url_for('add_room_type') }}" class="btn btn-success btn-sm">
+        <i class="fa-solid fa-layer-group me-1"></i> Manage Types
+    </a>
+{% endif %}
+
 </div>
 
-<!-- Javascript Search -->
 <script>
 function searchTable() {
-    let input = document.getElementById("tableSearch");
-    let filter = input.value.toLowerCase();
+    let input = document.getElementById("tableSearch").value.toLowerCase();
     let rows = document.querySelectorAll("#dataTable tbody tr");
 
     rows.forEach(row => {
-        let text = row.textContent.toLowerCase();
-        row.style.display = text.includes(filter) ? "" : "none";
+        row.style.display = row.textContent.toLowerCase().includes(input) ? "" : "none";
     });
 }
 </script>
-
-
 {% endblock %}

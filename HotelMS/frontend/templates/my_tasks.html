@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-warning">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url_for('dashboard') }}"><i class="fa-solid fa-hotel"></i> Room Service</a>
+    <ul class="navbar-nav ms-auto">
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('my_tasks') }}">My Tasks</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('rooms_list') }}">Rooms Status</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('add_room_assignment') }}">Rooms Assign</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2 class="mb-4"><i class="fa-solid fa-list-check me-2"></i> My Cleaning Tasks</h2>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle text-center">
+            <thead class="table-primary">
+                <tr>
+                    <th>Assignment ID</th>
+                    <th>Room #</th>
+                    <th>Date Assigned</th>
+                    <th>Date Completed</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ task.AssignmentID }}</td>
+                    <td>{{ task.RoomNumber }}</td>
+                    <td>{{ task.DateAssigned.strftime('%b %d, %Y %H:%M') }}</td>
+                    <td>
+                        {% if task.DateCompleted %}
+                            {{ task.DateCompleted.strftime('%b %d, %Y %H:%M') }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if task.DateCompleted %}
+                            <span class="badge bg-success">Completed</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-muted">No tasks assigned.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

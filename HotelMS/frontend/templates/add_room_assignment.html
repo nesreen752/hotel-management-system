@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-warning">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url_for('dashboard') }}"><i class="fa-solid fa-hotel"></i> Room Service</a>
+    <ul class="navbar-nav ms-auto">
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('my_tasks') }}">My Tasks</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('rooms_list') }}">Rooms Status</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('add_room_assignment') }}">Rooms Assign</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card p-4 shadow-sm mx-auto" style="max-width: 600px;">
+        <h2 class="mb-4 text-primary"><i class="fa-solid fa-plus me-2"></i> Add Room Assignment</h2>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="room_number" class="form-label">Select Room</label>
+                <select class="form-select" id="room_number" name="room_number" required>
+                    <option value="" disabled selected>Select a Room</option>
+                    {% for room in rooms %}
+                        <option value="{{ room.RoomNumber }}">Room {{ room.RoomNumber }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="date_assigned" class="form-label">Date Assigned</label>
+                <input type="datetime-local" class="form-control" id="date_assigned" name="date_assigned" required>
+            </div>
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{{ url_for('booking_rooms_list') }}" class="btn btn-secondary">
+                    <i class="fa-solid fa-xmark me-1"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-success">
+                    <i class="fa-solid fa-check me-1"></i> Assign Room
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
