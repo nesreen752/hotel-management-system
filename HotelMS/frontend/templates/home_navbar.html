@@ -16,19 +16,19 @@
           <ul class="navbar-nav ms-auto">
             <!-- Rooms Section (optional - delete if not used) -->
             <li class="nav-item">
-              <a class="nav-link" href="Home.html#rooms">Rooms</a>
+              <a class="nav-link" href="{{ url_for('rooms_list') }}">Rooms</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#services">Services</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="Home.html#reviews">Reviews</a>
+              <a class="nav-link" href="#reviews">Reviews</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#contact">Contact</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="login.html">For Staff</a>
+              <a class="nav-link" href="{{ url_for('login') }}">For Staff</a>
             </li>
             <li class="nav-item d-flex align-items-center">
               {% if session.get('name') %}

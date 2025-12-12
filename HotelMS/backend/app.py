@@ -35,6 +35,8 @@ def home():
 
 @app.route("/rooms")
 def rooms_list():
+    if 'staff_id' not in session:     
+        return redirect(url_for('login'))
     db = get_db()
     cursor = db.cursor(dictionary=True)
     cursor.execute("""
@@ -470,6 +472,12 @@ def add_room_assignment():
         return redirect("/booking_rooms")
 
     return render_template("add_room_assignment.html", rooms=rooms)
+
+
+
+
+
+
 
 
 
