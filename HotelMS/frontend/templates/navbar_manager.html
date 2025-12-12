@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url_for('dashboard') }}"><i class="fa-solid fa-hotel"></i> Manager Dashboard</a>
+
+    <ul class="navbar-nav ms-auto">
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('rooms_list') }}">Rooms</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('room_types') }}">Room Types</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('staff_list') }}">Staff</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('booking_rooms_list') }}">Bookings</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('transactions') }}">Transactions</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </div>
+</nav>
+{% endblock %}

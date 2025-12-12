@@ -1,0 +1,48 @@
+{% extends navbar %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">Welcome, {{ name }} 👋</h2>
+        <h5 class="text-muted">Role: {{ role|capitalize }}</h5>
+        <hr class="mt-3 mb-4">
+    </div>
+
+    <div class="row justify-content-center">
+        {% if role == "manager" %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm border-primary h-100">
+                <div class="card-body text-center">
+                    <i class="fa-solid fa-hotel fa-2x mb-3 text-primary"></i>
+                    <h5 class="card-title">Manager Dashboard</h5>
+                    <p class="card-text">You can manage rooms, room types, staff, and bookings.</p>
+                </div>
+            </div>
+        </div>
+        {% elif role == "receptionist" %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm border-success h-100">
+                <div class="card-body text-center">
+                    <i class="fa-solid fa-calendar-check fa-2x mb-3 text-success"></i>
+                    <h5 class="card-title">Receptionist Dashboard</h5>
+                    <p class="card-text">You can manage bookings, check-ins, and check-outs.</p>
+                </div>
+            </div>
+        </div>
+        {% elif role == "roomservice" %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm border-warning h-100">
+                <div class="card-body text-center">
+                    <i class="fa-solid fa-broom fa-2x mb-3 text-warning"></i>
+                    <h5 class="card-title">Room Service Dashboard</h5>
+                    <p class="card-text">You can view your cleaning tasks and room statuses.</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
