@@ -30,9 +30,13 @@
             <li class="nav-item">
               <a class="nav-link" href="login.html">For Staff</a>
             </li>
-            <li class="nav-item">
-              {% if session.get('firstname') %}
-                <a class="nav-link" href="#">{{ session['firstname'] }}</a>
+            <li class="nav-item d-flex align-items-center">
+              {% if session.get('name') %}
+                <span class="nav-link">{{ session['name'] }}</span>
+
+                <a class="nav-link text-danger" href="/logout" title="Logout">
+                  <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
               {% else %}
                 <a class="nav-link" href="/login">Sign In</a>
               {% endif %}
@@ -41,4 +45,15 @@
         </div>
       </div>
     </nav>
+    <div class="container mt-3">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message|safe }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
     <script src="/static/scripts/bootstrap.bundle.min.js"></script>  

@@ -231,7 +231,7 @@ def login():
 
     if request.method == 'POST':
         email = request.form['email'].strip().lower()
-        staff_id_input = request.form['staff_id'].strip()
+        staff_id_input = request.form['password'].strip()
 
         db = get_db()
         cursor = db.cursor(dictionary=True)
@@ -261,9 +261,9 @@ def login():
             return redirect('/reception')
         elif user_role == "roomservice":
             return redirect('/roomservice')
-        # else:
-        #     flash("Role not recognized!", "danger")
-        #     return redirect('/login')
+        else:
+            flash("Role not recognized!", "danger")
+            return redirect('/login')
 
     return render_template("login.html")
 
@@ -288,6 +288,7 @@ def roomservice_page():
 @app.route("/logout")
 def logout():
     session.clear()
+    flash("You have been logged out.", "success")
     return redirect('/login')
 
 if __name__ == "__main__":
