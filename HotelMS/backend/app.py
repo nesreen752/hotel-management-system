@@ -1,29 +1,36 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from db import get_db
 from datetime import datetime
+import random
 
-app = Flask(__name__, template_folder="../frontend/templates")
+app = Flask(__name__, template_folder="../frontend/templates", static_folder='../frontend/static')
+app.secret_key = "secret123"   # Needed for login sessions
 
+def generate_staff_id():
+    return str(random.randint(10000000, 99999999))
+
+# @app.route("/")
+# def dashboard():
+#     db = get_db()
+#     cursor = db.cursor(dictionary=True)
+
+#     cursor.execute("SELECT COUNT(*) AS total_rooms FROM Room")
+#     total_rooms = cursor.fetchone()["total_rooms"]
+
+#     cursor.execute("SELECT COUNT(*) AS available_rooms FROM Room WHERE Status='Available'")
+#     available_rooms = cursor.fetchone()["available_rooms"]
+
+#     cursor.execute("SELECT COUNT(*) AS total_bookings FROM Booking")
+#     total_bookings = cursor.fetchone()["total_bookings"]
+
+#     return render_template("dashboard.html",
+#                         total_rooms=total_rooms,
+#                         available_rooms=available_rooms,
+#                         total_bookings=total_bookings)
 
 @app.route("/")
-def dashboard():
-    db = get_db()
-    cursor = db.cursor(dictionary=True)
-
-    cursor.execute("SELECT COUNT(*) AS total_rooms FROM Room")
-    total_rooms = cursor.fetchone()["total_rooms"]
-
-    cursor.execute("SELECT COUNT(*) AS available_rooms FROM Room WHERE Status='Available'")
-    available_rooms = cursor.fetchone()["available_rooms"]
-
-    cursor.execute("SELECT COUNT(*) AS total_bookings FROM Booking")
-    total_bookings = cursor.fetchone()["total_bookings"]
-
-    return render_template("dashboard.html",
-                        total_rooms=total_rooms,
-                        available_rooms=available_rooms,
-                        total_bookings=total_bookings)
-
+def home():
+    return render_template("Home.html")
 
 @app.route("/rooms")
 def rooms_list():
@@ -183,5 +190,105 @@ def booking_rooms_list():
     return render_template("booking_rooms_list.html", 
                            bookings_rooms=bookings_rooms,
                            current_time=current_time)
+
+@app.route("/register", methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        fname = request.form['firstname'].strip()
+        lname = request.form['lastname'].strip()
+        role = request.form['role'].strip()
+        phone = request.form['phone'].strip()
+        email = request.form['email'].strip().lower()
+        salary = request.form['salary'].strip()
+
+        if not all([fname, lname, role, phone, email,salary]):
+            flash('All fields are required!', 'danger')
+            return render_template("add_staff.html")
+
+        staff_id = generate_staff_id()
+
+        try:
+            db = get_db()
+            cursor = db.cursor()
+            cursor.execute("""
+                INSERT INTO Staff (StaffID, FirstName, LastName, Role, Phone, Email, Salary)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (staff_id, fname, lname, role, phone, email, salary))
+            db.commit()
+            flash(f'Success! Staff registered. Login ID (Password): <strong>{staff_id}</strong>', 'success')
+        except Exception as e:
+            flash('Email already exists or database error.', 'danger')
+            print(e)
+
+        return render_template("Home.html")
+
+    return render_template("add_staff.html")
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    # if 'staff_id' in session:
+    #     return redirect(url_for('Home'))
+
+    if request.method == 'POST':
+        email = request.form['email'].strip().lower()
+        staff_id_input = request.form['staff_id'].strip()
+
+        db = get_db()
+        cursor = db.cursor(dictionary=True)
+        cursor.execute("SELECT StaffID, FirstName, Role FROM Staff WHERE LOWER(Email) = %s", (email,))
+        staff = cursor.fetchone()
+
+        if not staff:
+            flash('Email not found!', 'danger')
+            return render_template("login.html")
+
+        if staff['StaffID'] != staff_id_input:
+            flash('Incorrect Staff ID!', 'danger')
+            return render_template("login.html")
+
+        # Login success
+        session['staff_id'] = staff['StaffID']
+        session['name'] = staff['FirstName']
+        session['role'] = staff['Role']
+
+        flash(f'Welcome back, {staff["FirstName"]}!', 'success')
+        # Redirect by role
+        # Get role from staff
+        user_role = staff['Role'].lower()
+        if user_role == "manager":
+            return redirect('/manager')
+        elif user_role == "receptionist":
+            return redirect('/reception')
+        elif user_role == "roomservice":
+            return redirect('/roomservice')
+        # else:
+        #     flash("Role not recognized!", "danger")
+        #     return redirect('/login')
+
+    return render_template("login.html")
+
+# ----------------------------------------------------------------
+# ROLE PAGES
+# ----------------------------------------------------------------
+@app.route("/manager")
+def manager_page():
+    return render_template("Home.html")
+
+@app.route("/reception")
+def reception_page():
+    return render_template("booking_rooms_list.html")
+
+@app.route("/roomservice")
+def roomservice_page():
+    return render_template("dashboard.html")
+
+# ----------------------------------------------------------------
+# LOGOUT
+# ----------------------------------------------------------------
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect('/login')
+
 if __name__ == "__main__":
     app.run(debug=True)

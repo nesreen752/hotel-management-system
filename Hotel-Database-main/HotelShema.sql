@@ -92,13 +92,13 @@ CREATE TABLE Payment (
 -- 7) STAFF TABLE
 -- =============================
 CREATE TABLE Staff (
-    StaffID INT AUTO_INCREMENT PRIMARY KEY,
+    StaffID CHAR(8) PRIMARY KEY,
     FirstName VARCHAR(50) NOT NULL,
     LastName VARCHAR(50) NOT NULL,
-    Role VARCHAR(50) NOT NULL,
+    Role VARCHAR(50) NOT NULL CHECK (Role IN ('Manager', 'Receptionist', 'RoomService')),
     Phone VARCHAR(20) NOT NULL,
-    Email VARCHAR(100) UNIQUE,
-    Salary DECIMAL(10,2)
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Salary DECIMAL(10,2) NOT NULL
 );
 
 -- =============================
@@ -117,7 +117,7 @@ CREATE TABLE RoomAssignment (
 -- =============================
 CREATE TABLE RoomAssignment_Staff (
     AssignmentID INT NOT NULL,
-    StaffID INT NOT NULL,
+    StaffID CHAR(8) NOT NULL,
     PRIMARY KEY (AssignmentID, StaffID),
     FOREIGN KEY (AssignmentID) REFERENCES RoomAssignment(AssignmentID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (StaffID) REFERENCES Staff(StaffID) ON DELETE CASCADE ON UPDATE CASCADE
@@ -178,10 +178,10 @@ INSERT INTO Payment (BookingID, Amount, Date, Method) VALUES
 (2,7000,'2025-12-18 15:00:00','Cash');
 
 -- STAFF
-INSERT INTO Staff (FirstName, LastName, Role, Phone, Email, Salary) VALUES
-('Omar','Hassan','Cleaner','01000000001','omar@hotel.com',6000),
-('Mona','Ali','Receptionist','01000000002','mona@hotel.com',8000),
-('Khaled','Nabil','Manager','01000000003','khaled@hotel.com',15000);
+INSERT INTO Staff VALUES
+(11111111,'Omar','Hassan','RoomService','01000000001','omar@hotel.com',6000),
+(22222222,'Mona','Ali','Receptionist','01000000002','mona@hotel.com',8000),
+(33333333,'Khaled','Nabil','Manager','01000000003','khaled@hotel.com',15000);
 
 -- ROOM ASSIGNMENTS
 INSERT INTO RoomAssignment (RoomNumber, DateAssigned, DateCompleted) VALUES
@@ -190,10 +190,10 @@ INSERT INTO RoomAssignment (RoomNumber, DateAssigned, DateCompleted) VALUES
 
 -- ROOM ASSIGNMENT STAFF
 INSERT INTO RoomAssignment_Staff VALUES
-(1,1),
-(1,2),
-(2,1),
-(2,3);
+(1,11111111),
+(2,11111111),
+(3,22222222),
+(4,22222222);
 
 -- REVIEWS
 INSERT INTO Review (GuestID, Rating) VALUES

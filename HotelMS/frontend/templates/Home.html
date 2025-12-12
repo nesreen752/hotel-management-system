@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hotel Home Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Navbar -->
+
+    <div id="nav-placeholder">
+      {% include 'home_navbar.html' %}
+    </div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% set category, message = messages[-1] %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+      {{ message|safe }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endif %}
+{% endwith %}
+
+
+    <!-- Hero Section -->
+    <div class="container-fluid p-0">
+      <div
+        class="bg-dark text-light d-flex justify-content-center align-items-center"
+        style="
+          height: 70vh;
+          background: url('/static/images/hotel.jpg') center/cover no-repeat;
+        "
+      >
+
+      
+        <div class="text-center bg-dark bg-opacity-50 p-4 rounded">
+          <h1 class="display-4">Welcome to Grand Palace Hotel</h1>
+          <p class="lead">Luxury & Comfort in the Heart of the City</p>
+          <a href="Booking.html" class="btn btn-primary btn-lg">Book Now</a>
+          <a href="leave_review.html" class="btn btn-primary btn-lg"
+            >Leave a review</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Rooms Section (optional - delete if not used) -->
+    <section id="rooms" class="py-5">
+      <div class="container">
+        <h2 class="text-center mb-4">Our Rooms</h2>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="card">
+              <img
+                src="/static/images/gallery15.jpg"
+                class="card-img-top"
+                alt="Room 1"
+              />
+              <div class="card-body">
+                <h5 class="card-title">Deluxe Room</h5>
+                <p class="card-text">
+                  A spacious room with premium amenities and city view.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-5 bg-light">
+      <div class="container">
+        <h2 class="text-center mb-4">Our Services</h2>
+        <div class="row g-4">
+          <div class="col-md-4 text-center">
+            <h4>Spa & Wellness</h4>
+            <p>Relax and unwind with our premium spa treatments.</p>
+          </div>
+          <div class="col-md-4 text-center">
+            <h4>Fine Dining</h4>
+            <p>Enjoy world‑class meals prepared by top chefs.</p>
+          </div>
+          <div class="col-md-4 text-center">
+            <h4>24/7 Support</h4>
+            <p>Our team is always available to assist you.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-5 bg-light">
+      <div class="container">
+        <h2 class="text-center mb-4">Gallery</h2>
+
+        <div class="galleryblock">
+          <img src="/static/images/gallery1.jpg" class="img1" alt="Gallery 1" />
+          <img src="/static/images/gallery2.jpg" class="img2" alt="Gallery 2" />
+          <img src="/static/images/gallery3.jpg" class="img3" alt="Gallery 3" />
+          <img src="/static/images/gallery4.jpg" class="img4" alt="Gallery 4" />
+          <img src="/static/images/gallery5.jpg" class="img5" alt="Gallery 5" />
+          <img src="/static/images/gallery6.jpg" class="img6" alt="Gallery 6" />
+          <img src="/static/images/gallery7.jpg" class="img7" alt="Gallery 7" />
+          <img src="/static/images/gallery8.jpg" class="img8" alt="Gallery 8" />
+          <img src="/static/images/gallery9.jpg" class="img9" alt="Gallery 9" />
+          <img src="/static/images/gallery10.jpg" class="img10" alt="Gallery 10" />
+          <img src="/static/images/gallery11.jpg" class="img11" alt="Gallery 11" />
+          <img src="/static/images/gallery12.jpg" class="img12" alt="Gallery 12" />
+          <img src="/static/images/gallery13.jpg" class="img13" alt="Gallery 13" />
+          <img src="/static/images/gallery14.jpg" class="img14" alt="Gallery 14" />
+          <img src="/static/images/gallery15.jpg" class="img15" alt="Gallery 15" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section id="reviews" class="py-5 bg-dark text-light">
+      <div class="container">
+        <h2 class="text-center mb-4">Guest Reviews</h2>
+
+        <div class="review-slider">
+          <div class="review-card text-center">
+            <p>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+            </p>
+            <h6>- Sarah M.</h6>
+          </div>
+          <div class="review-card text-center">
+            <p>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+            </p>
+            <h6>- John D.</h6>
+          </div>
+          <div class="review-card text-center">
+            <p>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+            </p>
+            <h6>- Emily R.</h6>
+          </div>
+          <div class="review-card text-center">
+            <p>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+            </p>
+            <h6>- Michael T.</h6>
+          </div>
+          <div class="review-card text-center">
+            <p>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+              <i class="fa-solid fa-star text-warning"></i>
+            </p>
+            <h6>- Olivia S.</h6>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Footer Section -->
+    <div id="footer-placeholder">
+      {% include 'footer.html' %}
+    </div>
+
+    <script src="/static/scripts/bootstrap.bundle.min.js"></script>
+
+    <!-- <script>
+      // Function to load and inject HTML
+      function includeHTML(file, targetId) {
+        fetch(file)
+          .then((response) => response.text())
+          .then((html) => {
+            document.getElementById(targetId).innerHTML = html;
+          });
+      }
+
+      // Load the Navbar
+      includeHTML("home_navbar.html", "nav-placeholder");
+
+      // Load the Footer
+      includeHTML("footer.html", "footer-placeholder");
+    </script> -->
+  </body>
+</html>
