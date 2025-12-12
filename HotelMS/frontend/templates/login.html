@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hotel Home Page</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  </head>
+  <body>
+    <header>
+      <div id="nav-placeholder">
+        {% include 'home_navbar.html' %}
+      </div>
+
+    </header>
+
+    <main class="container py-5">
+      <div class="wrap">
+        <div class="card p-4" style="max-width: 420px; margin: 18px auto">
+          <h2 class="text-center mb-4">Staff Login</h2>
+          <form method="POST">
+            <div class="form-row mb-3">
+              <label for="emailInput" class="form-label">Email</label>
+              <input
+                id="emailInput"
+                class="form-control"
+                name="email"
+                type="email"
+                required
+              />
+            </div>
+            <div class="form-row mb-4">
+              <label for="passwordInput" class="form-label">Staff ID</label>
+              <input
+                id="passwordInput"
+                class="form-control"
+                name="password"
+                type="password"
+                required
+              />
+            </div>
+            <div class="form-row d-grid">
+              <button class="btn btn-primary" type="submit">Login</button>
+            </div>
+          </form>
+          <p class="text-center mt-2">
+            Don't have an account? <a href="/register" style ="text-decoration: none;">Sign Up</a>
+          </p>
+        </div>
+        </div>
+    </main>
+    <!-- Footer -->
+    <div id="footer-placeholder">
+      {% include 'footer.html' %}
+    </div>
+
+    <script src="/static/scripts/bootstrap.bundle.min.js"></script>
+
+    <!-- <script>
+      // Function to load and inject HTML
+      function includeHTML(file, targetId) {
+        fetch(file)
+          .then(response => response.text())
+          .then(html => {
+            document.getElementById(targetId).innerHTML = html;
+          });
+      }
+
+      // Load the Navbar
+      includeHTML('home_navbar.html', 'nav-placeholder');
+      
+      // Load the Footer
+      includeHTML('footer.html', 'footer-placeholder');
+    </script> -->
+  </body>
+</html>

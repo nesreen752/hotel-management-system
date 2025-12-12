@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add New Staff Member</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+</head>
+
+<body>
+    
+    <header>
+      <div id="nav-placeholder">
+        {% include 'home_navbar.html' %}
+      </div>
+    </header>
+
+    <main class="container mt-5 py-4"> 
+        <div class="card p-4 shadow-lg mx-auto" style="max-width: 600px;">
+            
+            <h2 class="mb-4 text-primary"><i class="fa-solid fa-user-plus me-2"></i> Add New Staff Member</h2>
+            
+            <form method="POST"> 
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="firstName" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstName" name="firstname" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="lastName" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" name="lastname" required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="(XXX) XXX-XXXX" required>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label for="role" class="form-label">Role</label>
+                        <select class="form-select" id="role" name="role" required>
+                            <option value="" selected disabled>Select Role</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Receptionist">Receptionist</option>
+                            <option value="Housekeeping">RoomService</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="salary" class="form-label">Salary ($)</label>
+                        <input type="number" class="form-control" id="salary" name="salary" step="0.01" required>
+                    </div>
+                </div>
+
+                
+                <hr>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="staff_list.html" class="btn btn-secondary">
+                        <i class="fa-solid fa-xmark me-1"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa-solid fa-check me-1"></i> Save Staff Member
+                    </button>
+                </div>
+            </form>
+            </div>
+    </main>
+    <div id="footer-placeholder">
+        {% include 'footer.html' %}
+    </div>
+
+    <script src="/static/scripts/bootstrap.bundle.min.js"></script>
+
+    <!-- <script>
+      // Function to load and inject HTML (for Navbar and Footer)
+      function includeHTML(file, targetId) {
+        fetch(file)
+          .then((response) => response.text())
+          .then((html) => {
+            document.getElementById(targetId).innerHTML = html;
+          });
+      }
+
+      // Load the Navbar
+      includeHTML("staff_navbar.html", "nav-placeholder");
+
+      // Load the Footer
+      includeHTML("footer.html", "footer-placeholder");
+    </script> -->
+</body>
+</html>
