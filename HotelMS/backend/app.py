@@ -94,24 +94,24 @@ def add_room_type():
 
 
         cursor.execute("""
-INSERT INTO RoomType
-(TypeName, BedCount, HasAC, HasTV, HasWiFi,
- HasBar, HasView,
- HasAirportShuttle, HasConcierge, HasPool,
- HasSpa, HasMeetingCorner, PricePerNight)
-VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-""", (
-    type_name,
-    bed_count,
-     has_ac, has_tv, has_wifi,
-    bar, view,
-    has_airport_shuttle,
-     has_concierge,
-    has_pool,
-    has_spa,
-    has_meeting_corner,
-    price
-))
+        INSERT INTO RoomType
+        (TypeName, BedCount, HasAC, HasTV, HasWiFi,
+        HasBar, HasView,
+        HasAirportShuttle, HasConcierge, HasPool,
+        HasSpa, HasMeetingCorner, PricePerNight)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """, (
+            type_name,
+            bed_count,
+            has_ac, has_tv, has_wifi,
+            bar, view,
+            has_airport_shuttle,
+            has_concierge,
+            has_pool,
+            has_spa,
+            has_meeting_corner,
+            price
+        ))
 
         db.commit()
         flash("Room type added successfully!", "success")
@@ -431,7 +431,6 @@ def my_tasks():
 
     staff_id = session.get('staff_id')
 
-    # جلب المهام الخاصة بالموظف الحالي
     cursor.execute("""
         SELECT ra.AssignmentID, ra.RoomNumber, ra.DateAssigned, ra.DateCompleted
         FROM RoomAssignment ra
@@ -443,7 +442,6 @@ def my_tasks():
     tasks = []
     for row in raw_tasks:
         task = row.copy()
-        # تحويل string to datetime إذا مش None
         if task['DateAssigned'] and isinstance(task['DateAssigned'], str):
             task['DateAssigned'] = datetime.strptime(task['DateAssigned'], "%Y-%m-%d %H:%M:%S")
         if task['DateCompleted'] and isinstance(task['DateCompleted'], str):
@@ -462,7 +460,6 @@ def add_room_assignment():
     db = get_db()
     cursor = db.cursor(dictionary=True)
 
-
     cursor.execute("SELECT RoomNumber FROM Room WHERE Status = 'Available'")
     rooms = cursor.fetchall()
 
@@ -470,21 +467,26 @@ def add_room_assignment():
         room_number = request.form.get("room_number")
         date_assigned = request.form.get("date_assigned")
 
-        # Insert into RoomAssignment
         cursor.execute("""
             INSERT INTO RoomAssignment (RoomNumber, DateAssigned)
             VALUES (%s, %s)
         """, (room_number, date_assigned))
+
         assignment_id = cursor.lastrowid
 
-        # Link the assignment to the logged-in staff
         cursor.execute("""
             INSERT INTO RoomAssignment_Staff (AssignmentID, StaffID)
             VALUES (%s, %s)
         """, (assignment_id, staff_id))
 
+        cursor.execute("""
+            UPDATE Room
+            SET Status = 'Cleaning'
+            WHERE RoomNumber = %s
+        """, (room_number,))
+
         db.commit()
-        return redirect("/booking_rooms")
+        return redirect("/my_tasks") 
 
     return render_template("add_room_assignment.html", rooms=rooms)
 
@@ -509,7 +511,6 @@ def process_booking():
     from datetime import datetime
     import random
 
-    # جلب بيانات الفورم
     fname = request.form.get("fname")
     lname = request.form.get("lname")
     phone = request.form.get("phone")
@@ -525,26 +526,21 @@ def process_booking():
     db = get_db()
     cursor = db.cursor(buffered=True)
 
-    # توليد GuestCode عشوائي
     guest_code = str(random.randint(10000000, 99999999))
 
-    # إدخال بيانات الضيف
     cursor.execute("""
         INSERT INTO Guest (FirstName, LastName, PhoneNumber, Email, City, State, Country, GuestCode)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
     """, (fname, lname, phone, email, city, state, country, guest_code))
     guest_id = cursor.lastrowid
 
-    # توليد BookingID عشوائي
     booking_id = str(random.randint(10000000, 99999999))
 
-    # إنشاء الحجز
     cursor.execute("""
         INSERT INTO Booking (BookingID, GuestID, CheckInDate, CheckOutDate)
         VALUES (%s, %s, %s, %s)
     """, (booking_id, guest_id, checkin, checkout))
 
-    # جلب بيانات نوع الغرفة
     cursor.execute("""
         SELECT RoomTypeID, TypeName, BedCount, HasAC, HasTV, HasWiFi, 
                HasAirportShuttle, HasConcierge, HasPool, HasSpa, 
@@ -573,7 +569,6 @@ def process_booking():
         "price": float(room[11])
     }
 
-    # حجز غرفة متاحة
     cursor.execute("""
         SELECT RoomNumber FROM Room
         WHERE RoomTypeID = %s AND Status = 'Available'
@@ -586,31 +581,25 @@ def process_booking():
 
     booked_room_number = booked_room[0]
 
-    # تحديث حالة الغرفة
     cursor.execute("UPDATE Room SET Status = 'Occupied' WHERE RoomNumber = %s", (booked_room_number,))
 
-    # إضافة رقم الغرفة للـ dictionary
     room_type_info["number"] = booked_room_number
 
-    # حساب السعر
     nights = (datetime.strptime(checkout, "%Y-%m-%d") - datetime.strptime(checkin, "%Y-%m-%d")).days
     subtotal = nights * room_type_info["price"]
     tax_percent = 14
     taxes = round(subtotal * tax_percent / 100, 2)
     total_amount = round(subtotal + taxes, 2)
 
-    # إدخال الدفع
     cursor.execute("""
         INSERT INTO Payment (BookingID, Amount, Date, Method)
         VALUES (%s, %s, NOW(), %s)
     """, (booking_id, total_amount, payment_method))
 
-    # ربط الحجز بالغرفة
     cursor.execute("INSERT INTO Booking_Rooms (BookingID, RoomNumber) VALUES (%s, %s)", (booking_id, booked_room_number))
 
     db.commit()
 
-    # عرض صفحة التأكيد
     return render_template("booking_done.html",
                            booking_id=booking_id,
                            guest_code=guest_code,
@@ -707,7 +696,6 @@ def submit_review():
     db = get_db()
     cursor = db.cursor()
 
-    # جلب GuestID بناءً على GuestCode و الاسم
     cursor.execute("""
         SELECT GuestID 
         FROM Guest
@@ -724,7 +712,6 @@ def submit_review():
     else:
         flash("Guest not found or name/code mismatch.", "danger")
 
-    # ارجع على الهوم اللي بيعرض الريفيوز
     return redirect(url_for("home"))
 
 
@@ -733,7 +720,6 @@ def home():
     db = get_db()
     cursor = db.cursor(dictionary=True)
     
-    # جلب آخر الـ Reviews
     cursor.execute("""
         SELECT g.FirstName, g.LastName, r.Rating 
         FROM Review r
