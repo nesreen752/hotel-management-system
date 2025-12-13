@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booking Confirmation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+</head>
+
+<body>
+    
+    <!-- Navbar -->
+    <header>
+      {% include 'home_navbar.html' %}
+    </header>
+
+    <main class="container mt-5 py-4"> 
+        <div class="row justify-content-center">
+            <div class="col-lg-10"> 
+                <div class="alert alert-success text-center py-4 mb-5 shadow-sm" role="alert">
+                    <i class="fa-solid fa-circle-check fa-3x mb-3"></i>
+                    <h1 class="alert-heading">Booking Confirmed!</h1>
+                    <p class="lead mb-0">Your reservation is complete. We look forward to your stay.</p>
+                </div>
+
+                <div class="card shadow-lg border-0">
+                    <div class="card-body p-4 p-md-5">
+
+                        <h3 class="mb-4 text-primary">Reservation Details</h3>
+                        
+                        <div class="d-flex justify-content-between align-items-baseline mb-4 p-3 bg-light rounded">
+                            <h5 class="mb-0 text-muted">Booking ID :</h5>
+                            <h4 class="mb-0 text-dark" id="confirmationNumber">#{{ guest_code }}</h4>
+                        </div>
+                        
+                        <div class="row mb-4 border-bottom pb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <h5><i class="fa-solid fa-user me-2 text-primary"></i> Guest Name</h5>
+                                <p class="ms-4" id="guestName">{{ guest_name }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5><i class="fa-solid fa-envelope me-2 text-primary"></i> Email Contact</h5>
+                                <p class="ms-4" id="guestEmail">{{ guest_email }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5><i class="fa-solid fa-phone me-2 text-primary"></i> Phone Number</h5>
+                                <p class="ms-4" id="guestPhone">{{ guest_phone }}</p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4 border-bottom pb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <h5><i class="fa-solid fa-calendar-alt me-2 text-primary"></i> Check-in & Check-out</h5>
+                                <p class="ms-4" id="checkInOut">{{ checkin }} – {{ checkout }} ({{ nights }} Nights)</p>
+                            </div>
+                        </div>
+
+                        <h4 class="mt-4 mb-3 text-secondary"><i class="fa-solid fa-door-open me-2"></i> Your Booked Room Type Details</h4>
+                        
+                        <div class="table-responsive border rounded shadow-sm">
+                            <table class="table table-bordered table-hover text-center align-middle mb-0">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Room #</th>
+                                        <th>Beds</th>
+                                        <th>AC</th>
+                                        <th>TV</th>
+                                        <th>WiFi</th>
+                                        <th>Shuttle</th>
+                                        <th>Concierge</th>
+                                        <th>Pool</th>
+                                        <th>Spa</th>
+                                        <th>Meeting</th>
+                                        <th>Price / Night</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{ room_type.name }}</td>
+                                        <td>{{ room_type.number }}</td>
+                                        <td>{{ room_type.beds }}</td>
+                                        <td>{{ '✔' if room_type.ac else '✖' }}</td>
+                                        <td>{{ '✔' if room_type.tv else '✖' }}</td>
+                                        <td>{{ '✔' if room_type.wifi else '✖' }}</td>
+                                        <td>{{ '✔' if room_type.shuttle else '✖' }}</td>
+                                        <td>{{ '✔' if room_type.concierge else '✖' }}</td>
+                                        <td>{{ '✔' if room_type.pool else '✖' }}</td>
+                                        <td>{{ '✔' if room_type.spa else '✖' }}</td>
+                                        <td>{{ '✔' if room_type.meeting else '✖' }}</td>
+                                        <td>${{ room_type.price }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4 class="mt-5 mb-3 text-secondary"><i class="fa-solid fa-dollar-sign me-2"></i> Payment Summary</h4>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Subtotal ({{ nights }} Nights)
+                                <span>${{ subtotal }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Taxes & Fees ({{ tax_percent }}%)
+                                <span>${{ taxes }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-dark">
+                                <strong>Total Paid</strong>
+                                <strong><span id="totalCost">${{ total }}</span></strong>
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
+
+                <div class="text-center mt-5">
+                    <a href="{{ url_for('home') }}" class="btn btn-lg btn-secondary">
+                        <i class="fa-solid fa-hotel me-2"></i> Go to Main Page
+                    </a>
+                    <button class="btn btn-lg btn-outline-dark ms-3" onclick="window.print()">
+                        <i class="fa-solid fa-print me-2"></i> Print Receipt
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      {% include 'footer.html' %}
+    </footer>
+
+    <script src="{{ url_for('static', filename='scripts/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>
