@@ -22,26 +22,26 @@
             <!-- <th>Actions</th> -->
         </tr>
     </thead>
-   <tbody>
-{% for t in types %}
-<tr>
-    <td>{{ t.RoomTypeID }}</td>
-    <td>{{ t.TypeName }}</td>
-    <td>{{ t.BedCount }}</td>
+    <tbody>
+        {% for t in types %}
+        <tr>
+            <td>{{ t.RoomTypeID }}</td>
+            <td>{{ t.TypeName }}</td>
+            <td>{{ t.BedCount }}</td>
 
-    <td>{% if t.HasAC %}✔️{% else %}❌{% endif %}</td>
-    <td>{% if t.HasTV %}✔️{% else %}❌{% endif %}</td>
-    <td>{% if t.HasWiFi %}✔️{% else %}❌{% endif %}</td>
-    <td>{% if t.HasAirportShuttle %}✔️{% else %}❌{% endif %}</td>
-    <td>{% if t.HasConcierge %}✔️{% else %}❌{% endif %}</td>
-    <td>{% if t.HasPool %}✔️{% else %}❌{% endif %}</td>
-    <td>{% if t.HasSpa %}✔️{% else %}❌{% endif %}</td>
-    <td>{% if t.HasMeetingCorner %}✔️{% else %}❌{% endif %}</td>
+            <td>{% if t.HasAC %}✔️{% else %}❌{% endif %}</td>
+            <td>{% if t.HasTV %}✔️{% else %}❌{% endif %}</td>
+            <td>{% if t.HasWiFi %}✔️{% else %}❌{% endif %}</td>
+            <td>{% if t.HasAirportShuttle %}✔️{% else %}❌{% endif %}</td>
+            <td>{% if t.HasConcierge %}✔️{% else %}❌{% endif %}</td>
+            <td>{% if t.HasPool %}✔️{% else %}❌{% endif %}</td>
+            <td>{% if t.HasSpa %}✔️{% else %}❌{% endif %}</td>
+            <td>{% if t.HasMeetingCorner %}✔️{% else %}❌{% endif %}</td>
 
-    <td>{{ t.PricePerNight }} EGP</td>
-</tr>
-{% endfor %}
-</tbody>
+            <td>{{ t.PricePerNight }} EGP</td>
+        </tr>
+        {% endfor %}
+    </tbody>
 
 </table>
 <div class="d-flex justify-content-end gap-2">
