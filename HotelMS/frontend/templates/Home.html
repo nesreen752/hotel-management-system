@@ -31,10 +31,9 @@
         <div class="text-center bg-dark bg-opacity-50 p-4 rounded">
           <h1 class="display-4">Welcome to Grand Palace Hotel</h1>
           <p class="lead">Luxury & Comfort in the Heart of the City</p>
-          <a href=" " class="btn btn-primary btn-lg">Book Now</a>
-          <a href=" " class="btn btn-primary btn-lg"
-            >Leave a review</a
-          >
+          <a href="{{ url_for('booking') }}" class="btn btn-primary btn-lg">Book Now</a>
+          <a href="{{ url_for('leave_review') }}" class="btn btn-primary btn-lg"
+            >Leave a review</a>
         </div>
       </div>
     </div>
@@ -110,64 +109,72 @@
     </section>
 
     <!-- Reviews Section -->
-    <section id="reviews" class="py-5 bg-dark text-light">
-      <div class="container">
-        <h2 class="text-center mb-4">Guest Reviews</h2>
+     <!-- <section id="reviews" class="py-5 bg-dark text-light">
+  <div class="container">
+    <h2 class="text-center mb-4">Guest Reviews</h2>
 
-        <div class="review-slider">
-          <div class="review-card text-center">
-            <p>
+    <div class="review-slider">
+      {% for review in reviews %}
+  <div class="review-card text-center">
+    <p>
+      {% for i in range(review['Rating']) %}
+        <i class="fa-solid fa-star text-warning"></i>
+      {% endfor %}
+      {% for i in range(5 - review['Rating']) %}
+        <i class="fa-regular fa-star text-warning"></i>
+      {% endfor %}
+    </p>
+    <h6>- {{ review['FirstName'] }} {{ review['LastName'] }}</h6>
+  </div>
+{% endfor %}
+
+    </div>
+  </div>
+</section> -->
+<section id="reviews" class="py-5 bg-dark text-light">
+  <div class="container">
+    <h2 class="text-center mb-4">Guest Reviews</h2>
+
+    <div class="review-slider">
+      {% for review in reviews %}
+        <div class="review-card text-center">
+          <p>
+            {% for i in range(review.Rating) %}
               <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-            </p>
-            <h6>- Sarah M.</h6>
-          </div>
-          <div class="review-card text-center">
-            <p>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-            </p>
-            <h6>- John D.</h6>
-          </div>
-          <div class="review-card text-center">
-            <p>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-            </p>
-            <h6>- Emily R.</h6>
-          </div>
-          <div class="review-card text-center">
-            <p>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-            </p>
-            <h6>- Michael T.</h6>
-          </div>
-          <div class="review-card text-center">
-            <p>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-            </p>
-            <h6>- Olivia S.</h6>
-          </div>
+            {% endfor %}
+            {% for i in range(5 - review.Rating) %}
+              <i class="fa-regular fa-star text-warning"></i>
+            {% endfor %}
+          </p>
+          <h6>- {{ review.FirstName }} {{ review.LastName }}</h6>
         </div>
-      </div>
-    </section>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+<!-- <section id="reviews" class="py-5 bg-dark text-light">
+  <div class="container">
+    <h2 class="text-center mb-4">Guest Reviews</h2>
+
+    <div class="review-slider">
+      {% for review in reviews %}
+        <div class="review-card text-center">
+          <p>
+            {% for i in range(review.Rating) %}
+              <i class="fa-solid fa-star text-warning"></i>
+            {% endfor %}
+            {% for i in range(5 - review.Rating) %}
+              <i class="fa-regular fa-star text-warning"></i>
+            {% endfor %}
+          </p>
+          <h6>- {{ review.FirstName }} {{ review.LastName }}</h6>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section> -->
     <!-- Footer Section -->
     <div id="footer-placeholder">
       {% include 'footer.html' %}
