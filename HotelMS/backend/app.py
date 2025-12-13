@@ -77,33 +77,48 @@ def add_room_type():
         db = get_db()
         cursor = db.cursor()
 
-        # Retrieve form data
         type_name = request.form.get("name")
-        beds = request.form.get("beds")
-        ac = request.form.get("ac", 0)
-        tv = request.form.get("tv", 0)
-        wifi = request.form.get("wifi", 0)
-        airport_shuttle = request.form.get("airportShuttle", 0)
-        concierge = request.form.get("concierge", 0)
-        pool = request.form.get("pool", 0)
-        spa = request.form.get("spa", 0)
-        meeting_corner = request.form.get("meetingCorner", 0)
+        bed_count = request.form.get("beds")
+        price = request.form.get("price")
 
-        # Insert into the RoomType table
-        cursor.execute(
-            """
-            INSERT INTO RoomType (TypeName, Beds, AC, TV, WiFi, AirportShuttle, Concierge, Pool, Spa, MeetingCorner)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """,
-            (type_name, beds, ac, tv, wifi, airport_shuttle, concierge, pool, spa, meeting_corner)
-        )
+        has_ac = 1 if request.form.get("ac") else 0
+        has_tv = 1 if request.form.get("tv") else 0
+        has_wifi = 1 if request.form.get("wifi") else 0
+        has_airport_shuttle = 1 if request.form.get("airportShuttle") else 0
+        has_concierge = 1 if request.form.get("concierge") else 0
+        has_pool = 1 if request.form.get("pool") else 0
+        has_spa = 1 if request.form.get("spa") else 0
+        has_meeting_corner = 1 if request.form.get("meetingCorner") else 0
+        bar = 1 if request.form.get("bar") else 0
+        view = 1 if request.form.get("view") else 0        
+
+
+        cursor.execute("""
+INSERT INTO RoomType
+(TypeName, BedCount, HasAC, HasTV, HasWiFi,
+ HasBar, HasView,
+ HasAirportShuttle, HasConcierge, HasPool,
+ HasSpa, HasMeetingCorner, PricePerNight)
+VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+""", (
+    type_name,
+    bed_count,
+     has_ac, has_tv, has_wifi,
+    bar, view,
+    has_airport_shuttle,
+     has_concierge,
+    has_pool,
+    has_spa,
+    has_meeting_corner,
+    price
+))
+
         db.commit()
+        flash("Room type added successfully!", "success")
+        return redirect(url_for("room_types"))
 
-        # Redirect to the room types page
-        return redirect("/room-types")
-
-    # If GET request, render the add room type form
     return render_template("add_room_type.html")
+
 
 
 @app.route("/room/add", methods=["GET", "POST"])
